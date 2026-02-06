@@ -1,4 +1,3 @@
-// @ts-check
 import { test, expect } from "@playwright/test";
 
 test("Add/Remove_Elements", async ({ page }) => {
@@ -25,6 +24,13 @@ test("Add/Remove_Elements", async ({ page }) => {
   }
 });
 
+test(`Basic_Auth`, async ({ page }) => {
+  await page.goto("https://admin:admin@the-internet.herokuapp.com/basic_auth");
+  await expect(
+    page.locator("//p[contains(text(),'Congratulations!')]"),
+  ).toBeVisible();
+});
+
 test(`Challenging_DOM`, async ({ page }) => {
   await page.goto("https://the-internet.herokuapp.com/challenging_dom");
   //button locators
@@ -36,9 +42,36 @@ test(`Challenging_DOM`, async ({ page }) => {
   let table;
 });
 
-test(``, async ({ page }) => {
-  let checkbox = (checkboxNo) =>
+test(`Checkboxes`, async ({ page }) => {
+  await page.goto("https://the-internet.herokuapp.com/checkboxes");
+  let checkbox = (box_text) =>
     page.locator(
-      `//text()[contains(., '${checkboxNo}')]/preceding-sibling::input[1]`,
+      `//text()[contains(., '${box_text}')]/preceding-sibling::input[1]`,
     );
+  if ((await checkbox("1").isChecked()) === false) {
+    await checkbox("1").click();
+  }
+  await expect(checkbox("2")).toBeChecked();
+  await checkbox("2").click();
+});
+
+test(`Disappearing_Elements`, async ({ page }) => {
+  await page.goto("https://the-internet.herokuapp.com/disappearing_elements");
+  let disappearing_element = page.locator("//a[text()='Gallery']");
+  for (; (await disappearing_element.isVisible()) == false; ) {
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+  }
+});
+
+test(`Dropdown_List`, async ({ page }) => {
+  await page.goto("https://the-internet.herokuapp.com/dropdown");
+  let dropdown = page.locator(`//select[@id="dropdown"]`);
+  await dropdown.selectOption("2");
+  await expect(dropdown).toHaveValue("2");
+});
+
+test(`Dynamic_Controls`, async ({ page }) => {
+  await page.goto("https://the-internet.herokuapp.com/dynamic_controls");
+  let;
 });

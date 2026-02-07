@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { text } from "node:stream/consumers";
 
 test("Add/Remove_Elements", async ({ page }) => {
   await page.goto("https://the-internet.herokuapp.com/add_remove_elements/");
@@ -73,5 +74,35 @@ test(`Dropdown_List`, async ({ page }) => {
 
 test(`Dynamic_Controls`, async ({ page }) => {
   await page.goto("https://the-internet.herokuapp.com/dynamic_controls");
-  let;
+  let button = (btn_text) => page.locator(`//button[text()='${btn_text}']`);
+  let checkbox = page.locator(`//input[@id="checkbox"]`);
+  let textbox = page.locator('//input[@type="text"]');
+  await button("Remove").click();
+  await button("Add").waitFor({ state: "visible" });
+  await button("Add").click();
+  await checkbox.click();
+
+  await button("Enable").click();
+  await button("Disable").waitFor({ state: "visible" });
+  await expect(textbox).toBeEnabled();
+  await textbox.fill("Lmao");
+  await button("Disable").click();
+  await expect(textbox).toHaveValue("Lmao");
 });
+
+test(`Dynamically_Loaded_Page_Elements`, async ({ page }) => {
+  let element = page.locator(`//div//div/h4[text()='Hello World!']`);
+  let start = page.locator(`//button`);
+
+  await page.goto("https://the-internet.herokuapp.com/dynamic_loading/1");
+  await expect(element).toBeHidden();
+  await start.click();
+  await expect(element).toBeVisible();
+
+  await page.goto("https://the-internet.herokuapp.com/dynamic_loading/2");
+  await expect(element).not.toBeAttached();
+  await start.click();
+  await expect(element).toBeVisible();
+});
+
+text(``)

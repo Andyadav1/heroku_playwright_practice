@@ -35,6 +35,7 @@ export default defineConfig({
     actionTimeout: 10 * 1000,
     browserName: "chromium",
     headless: false,
+    permissions: ['geolocation'],
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on",
   },

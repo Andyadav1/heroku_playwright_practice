@@ -1,5 +1,4 @@
 import { test, expect } from "@playwright/test";
-import { text } from "node:stream/consumers";
 
 test("Add/Remove_Elements", async ({ page }) => {
   await page.goto("https://the-internet.herokuapp.com/add_remove_elements/");
@@ -105,4 +104,29 @@ test(`Dynamically_Loaded_Page_Elements`, async ({ page }) => {
   await expect(element).toBeVisible();
 });
 
-text(``)
+test(`JavaScript_Alerts`, async ({ page }) => {
+  await page.goto("https://the-internet.herokuapp.com/javascript_alerts");
+  let button = (btn_text) => page.locator(`//button[text()='${btn_text}']`);
+  page.on("dialog", (dialog) => {
+    console.log(dialog.message);
+    dialog.accept("Lmao");
+  });
+  await button("Click for JS Prompt").click();
+  expect(page.locator(`//p[@id="result"]`)).toContainText("Lmao");
+});
+
+test(`Frame`, async ({ page }) => {
+  await page.goto("https://the-internet.herokuapp.com/iframe");
+  let framecheck = page
+    .frameLocator('xpath=//iframe[@id="mce_0_ifr"]')
+    .locator("//p");
+  await page.locator('//div[@class="tox-icon"]').click();
+  await expect(framecheck).toContainText("content");
+});
+
+test.only(`Key_Presses`, async ({ page }) => {
+  await page.goto("https://the-internet.herokuapp.com/key_presses");
+  await page.locator('//input[@type="text"]').click();
+  await page.keyboard.press('Control');
+  await expect(page.locator('//p[@id="result"]')).toContainText("CONTROL")
+});

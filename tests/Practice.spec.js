@@ -127,6 +127,17 @@ test(`Frame`, async ({ page }) => {
 test.only(`Key_Presses`, async ({ page }) => {
   await page.goto("https://the-internet.herokuapp.com/key_presses");
   await page.locator('//input[@type="text"]').click();
-  await page.keyboard.press('Control');
-  await expect(page.locator('//p[@id="result"]')).toContainText("CONTROL")
+  await page.keyboard.press("Control");
+  await expect(page.locator('//p[@id="result"]')).toContainText("CONTROL");
+});
+
+test(`Opening_new+window`, async ({ browser }) => {
+  let context = await browser.newContext();
+  let page = await context.newPage();
+
+  await page.goto("https://the-internet.herokuapp.com/windows");
+  const pagePromise = context.waitForEvent("page");
+  await page.locator(`//a[text()='Click Here']`).click();
+  let newPage = await pagePromise;
+  await expect(newPage.locator("//h3")).toContainText("New Window");
 });

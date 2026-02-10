@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, request } from "@playwright/test";
 
 test("Add/Remove_Elements", async ({ page }) => {
   await page.goto("https://the-internet.herokuapp.com/add_remove_elements/");
@@ -141,3 +141,7 @@ test(`Opening_new+window`, async ({ browser }) => {
   let newPage = await pagePromise;
   await expect(newPage.locator("//h3")).toContainText("New Window");
 });
+
+test(`API Test`,async ()=>{
+  let API = await request.newContext()
+})

@@ -1,4 +1,5 @@
-import { test, expect, request } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import path from "path";
 
 test("Add/Remove_Elements", async ({ page }) => {
   await page.goto("https://the-internet.herokuapp.com/add_remove_elements/");
@@ -124,11 +125,12 @@ test(`Frame`, async ({ page }) => {
   await expect(framecheck).toContainText("content");
 });
 
-test.only(`Key_Presses`, async ({ page }) => {
+test(`Key_Presses`, async ({ page }) => {
   await page.goto("https://the-internet.herokuapp.com/key_presses");
   await page.locator('//input[@type="text"]').click();
   await page.keyboard.press("Control");
   await expect(page.locator('//p[@id="result"]')).toContainText("CONTROL");
+  //await page.locator().pressSequentially('sus')
 });
 
 test(`Opening_new+window`, async ({ browser }) => {
@@ -142,6 +144,24 @@ test(`Opening_new+window`, async ({ browser }) => {
   await expect(newPage.locator("//h3")).toContainText("New Window");
 });
 
-test(`API Test`,async ()=>{
-  let API = await request.newContext()
-})
+test(`Drag_and_Drop`, async ({ page }) => {
+  await page.goto("https://the-internet.herokuapp.com/drag_and_drop");
+  await page.locator('//div[@id="column-a"]').hover();
+  await page.mouse.down();
+  await page.locator('//div[@id="column-b"]').hover();
+  await page.mouse.up();
+});
+
+test.only(`File_Uploader`, async ({ page }) => {
+  await page.goto("https://the-internet.herokuapp.com/upload");
+  let uplodad = page.locator('//input[@type="file" and @id="file-upload"]');
+  await uplodad.setInputFiles(
+    path.join(
+      "/home/andy/heroku_playwright_practice/test_data/AnandYadav_AutomationEngineer.pdf",
+    ),
+  );
+  await page.locator('//input[@type="submit"]').click();
+  await expect(page.locator('//h3[text()="File Uploaded!"]')).toBeVisible();
+});
+
+
